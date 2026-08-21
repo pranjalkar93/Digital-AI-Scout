@@ -756,6 +756,9 @@ export default function App() {
             drills={drills}
             trialHistory={trialHistory}
             activeSubTab="drills"
+            currentRole={currentRole}
+            currentUserAccount={currentUserAccount}
+            posts={posts}
             onOpenRecorder={(drill) => {
               if (currentRole === 'GUEST') {
                 setIsAuthModalOpen(true);
@@ -766,6 +769,12 @@ export default function App() {
             }}
             onNavigateToTab={setActiveTab}
             onToggleProSubscription={handleToggleProSubscription}
+            onUpgradePro={() => {
+              setActivePlayer(prev => ({ ...prev, isProSubscriber: true }));
+            }}
+            onVerifyAiffCrs={(pId, crsId) => {
+              handleVerifyAiffCrs(pId, crsId);
+            }}
           />
         )}
 
@@ -777,6 +786,8 @@ export default function App() {
             trialHistory={trialHistory}
             activeSubTab="dashboard"
             currentRole={currentRole}
+            currentUserAccount={currentUserAccount}
+            posts={posts}
             onOpenRecorder={(drill) => {
               if (currentRole === 'GUEST') {
                 setIsAuthModalOpen(true);
@@ -787,6 +798,12 @@ export default function App() {
             }}
             onNavigateToTab={setActiveTab}
             onToggleProSubscription={handleToggleProSubscription}
+            onUpgradePro={() => {
+              setActivePlayer(prev => ({ ...prev, isProSubscriber: true }));
+            }}
+            onVerifyAiffCrs={(pId, crsId) => {
+              handleVerifyAiffCrs(pId, crsId);
+            }}
           />
         )}
 

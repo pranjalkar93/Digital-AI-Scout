@@ -397,7 +397,25 @@ export type AuditActionType =
   | 'FOLLOW_REMOVED'
   | 'USER_BLOCKED'
   | 'USER_UNBLOCKED'
-  | 'USER_PROFILE_REPORT';
+  | 'USER_PROFILE_REPORT'
+  | 'PLAYER_DASHBOARD_VIEWED'
+  | 'ACHIEVEMENT_UNLOCKED'
+  | 'SUBSCRIPTION_UPGRADED'
+  | 'AIFF_CRS_VERIFIED';
+
+export interface PlayerAchievement {
+  id: string;
+  playerId: string;
+  code: string;
+  title: string;
+  category: 'PHYSICAL' | 'RANKING' | 'TECHNICAL' | 'MILESTONE' | 'VERIFICATION';
+  description: string;
+  icon: string;
+  unlocked: boolean;
+  unlockedAt?: string;
+  progressPct?: number;
+  benchmarkText?: string;
+}
 
 
 export interface AuditLog {
