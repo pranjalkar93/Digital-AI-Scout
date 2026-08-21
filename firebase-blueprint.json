@@ -1,0 +1,204 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Account",
+      "description": "Registered user profile and identity details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique user ID" },
+        "phone": { "type": "string", "description": "Phone number" },
+        "role": { "type": "string", "enum": ["USER", "PLAYER", "SCOUT", "ADMIN"], "description": "User account role" },
+        "status": { "type": "string", "description": "Account status" },
+        "displayName": { "type": "string", "maxLength": 100, "description": "Full display name" },
+        "firstName": { "type": "string", "maxLength": 50, "description": "First name" },
+        "lastName": { "type": "string", "maxLength": 50, "description": "Last name" },
+        "dob": { "type": "string", "description": "Date of birth" },
+        "gender": { "type": "string", "description": "Gender" },
+        "city": { "type": "string", "description": "City" },
+        "state": { "type": "string", "description": "State" },
+        "country": { "type": "string", "description": "Country" },
+        "profilePhoto": { "type": "string", "description": "Profile picture URL" },
+        "qualificationStatus": { "type": "string", "description": "Player qualification assessment status" },
+        "playerId": { "type": "string", "description": "Associated DSI Player ID if qualified" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp" }
+      },
+      "required": ["id", "phone", "displayName", "role"]
+    },
+    "PlayerProfile": {
+      "title": "Player Profile",
+      "description": "Grassroots player profile with verified metrics and stats",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Player ID" },
+        "name": { "type": "string", "maxLength": 100, "description": "Player name" },
+        "age": { "type": "number", "description": "Player age" },
+        "position": { "type": "string", "description": "Field position" },
+        "state": { "type": "string", "description": "State" },
+        "district": { "type": "string", "description": "District" },
+        "photo": { "type": "string", "description": "Photo URL" },
+        "rating": { "type": "number", "description": "Player rating" },
+        "tier": { "type": "string", "description": "Tier level" },
+        "scoutVerified": { "type": "boolean", "description": "Verified by scout flag" },
+        "bio": { "type": "string", "maxLength": 500, "description": "Player bio" }
+      },
+      "required": ["id", "name", "position", "state"]
+    },
+    "CommunityPost": {
+      "title": "Community Post",
+      "description": "Feed post, photo, match stat, or video reel shared by user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Post ID" },
+        "authorId": { "type": "string", "description": "Author UID" },
+        "authorName": { "type": "string", "maxLength": 100, "description": "Author name" },
+        "authorPhoto": { "type": "string", "description": "Author photo URL" },
+        "authorState": { "type": "string", "description": "Author state" },
+        "title": { "type": "string", "maxLength": 1000, "description": "Post caption or title" },
+        "postType": { "type": "string", "enum": ["TEXT_POST", "PHOTO", "MATCH_STATS", "PLAYER_VIDEO", "FREESTYLE"], "description": "Type of post" },
+        "category": { "type": "string", "description": "Post category" },
+        "imageUrl": { "type": "string", "description": "Optional image URL" },
+        "videoThumbnail": { "type": "string", "description": "Optional video thumbnail URL" },
+        "likesCount": { "type": "number", "description": "Total upvotes/likes" },
+        "commentsCount": { "type": "number", "description": "Total comments" },
+        "viewsCount": { "type": "number", "description": "Total views" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" }
+      },
+      "required": ["id", "authorId", "authorName", "title", "postType"]
+    },
+    "Comment": {
+      "title": "Post Comment",
+      "description": "User comment on a community feed post",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Comment ID" },
+        "authorId": { "type": "string", "description": "Author UID" },
+        "authorName": { "type": "string", "maxLength": 100, "description": "Author name" },
+        "authorPhoto": { "type": "string", "description": "Author photo URL" },
+        "text": { "type": "string", "maxLength": 500, "description": "Comment text" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "authorName", "text"]
+    },
+    "QualificationAttempt": {
+      "title": "Qualification Attempt",
+      "description": "Record of a user's basic football qualification assessment",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Attempt ID" },
+        "userId": { "type": "string", "description": "User ID" },
+        "attemptNumber": { "type": "number", "description": "Attempt sequence number" },
+        "passed": { "type": "boolean", "description": "Whether user passed benchmark" },
+        "timestamp": { "type": "string", "description": "Attempt timestamp" }
+      },
+      "required": ["id", "userId", "passed"]
+    },
+    "AuditLog": {
+      "title": "User Transaction Audit Log",
+      "description": "User-wise immutable transaction and audit event log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique log entry ID" },
+        "userId": { "type": "string", "description": "Target User ID" },
+        "userName": { "type": "string", "description": "Target User Name" },
+        "userRole": { "type": "string", "description": "User Role at action time" },
+        "actionType": { "type": "string", "description": "Audit event type e.g. USER_REGISTER, POST_CREATE, QUALIFICATION_SUBMIT" },
+        "description": { "type": "string", "description": "Human readable event summary" },
+        "metadata": { "type": "object", "description": "Event detail key-value metadata" },
+        "timestamp": { "type": "string", "description": "ISO timestamp of event" }
+      },
+      "required": ["id", "userId", "actionType", "description", "timestamp"]
+    },
+    "DrillSubmission": {
+      "title": "Drill Submission",
+      "description": "Drill attempt and performance score record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Submission ID" },
+        "userId": { "type": "string", "description": "User ID" },
+        "userName": { "type": "string", "description": "User Name" },
+        "drillId": { "type": "string", "description": "Drill identifier" },
+        "drillTitle": { "type": "string", "description": "Title of drill" },
+        "score": { "type": "number", "description": "Overall score" },
+        "primaryMetricValue": { "type": "number", "description": "Metric value achieved" },
+        "tierAchieved": { "type": "string", "description": "Tier achieved e.g. BRONZE, SILVER, GOLD" },
+        "status": { "type": "string", "description": "Submission status" },
+        "timestamp": { "type": "string", "description": "Timestamp" }
+      },
+      "required": ["id", "userId", "drillTitle", "score"]
+    },
+    "SubscriptionTransaction": {
+      "title": "Subscription Transaction",
+      "description": "User subscription status or payment transaction record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Transaction ID" },
+        "userId": { "type": "string", "description": "User ID" },
+        "userName": { "type": "string", "description": "User Name" },
+        "planName": { "type": "string", "description": "Plan name e.g. Digital Scout Pro" },
+        "amountInr": { "type": "number", "description": "Amount in INR" },
+        "status": { "type": "string", "description": "Transaction status e.g. SUCCESS" },
+        "paymentMethod": { "type": "string", "description": "Payment channel" },
+        "timestamp": { "type": "string", "description": "Timestamp" }
+      },
+      "required": ["id", "userId", "planName", "amountInr"]
+    },
+    "ScoutActionLog": {
+      "title": "Scout Action Log",
+      "description": "Scout player shortlisting and outreach activity log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Action log ID" },
+        "scoutId": { "type": "string", "description": "Scout ID" },
+        "scoutName": { "type": "string", "description": "Scout name" },
+        "action": { "type": "string", "description": "Action type e.g. SHORTLIST, MESSAGE_SENT" },
+        "targetPlayerId": { "type": "string", "description": "Target player ID" },
+        "targetPlayerName": { "type": "string", "description": "Target player name" },
+        "timestamp": { "type": "string", "description": "Timestamp" }
+      },
+      "required": ["id", "scoutId", "action", "targetPlayerId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles collection"
+    },
+    "/users/{userId}/auditLogs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "User-wise transaction audit logs subcollection"
+    },
+    "/auditLogs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "Global transaction audit logs collection"
+    },
+    "/players/{playerId}": {
+      "schema": { "$ref": "#/entities/PlayerProfile" },
+      "description": "Player profiles collection"
+    },
+    "/posts/{postId}": {
+      "schema": { "$ref": "#/entities/CommunityPost" },
+      "description": "Community posts feed collection"
+    },
+    "/posts/{postId}/comments/{commentId}": {
+      "schema": { "$ref": "#/entities/Comment" },
+      "description": "Comments on community posts"
+    },
+    "/qualificationAttempts/{attemptId}": {
+      "schema": { "$ref": "#/entities/QualificationAttempt" },
+      "description": "Player qualification assessment attempts"
+    },
+    "/drillSubmissions/{submissionId}": {
+      "schema": { "$ref": "#/entities/DrillSubmission" },
+      "description": "Drill performance submissions collection"
+    },
+    "/subscriptionTransactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/SubscriptionTransaction" },
+      "description": "Subscription payment transaction records"
+    },
+    "/scoutActions/{actionId}": {
+      "schema": { "$ref": "#/entities/ScoutActionLog" },
+      "description": "Scout activity and shortlist logs"
+    }
+  }
+}

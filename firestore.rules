@@ -1,0 +1,67 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read, write: if true;
+
+      // User Audit Logs Subcollection (Immutable)
+      match /auditLogs/{logId} {
+        allow read, create: if true;
+        allow update, delete: if false;
+      }
+
+      // User Drill Submissions Subcollection
+      match /drillSubmissions/{submissionId} {
+        allow read, write: if true;
+      }
+    }
+
+    // Global Audit Logs Collection (Immutable)
+    match /auditLogs/{logId} {
+      allow read, create: if true;
+      allow update, delete: if false;
+    }
+
+    // Players Collection
+    match /players/{playerId} {
+      allow read, write: if true;
+    }
+
+    // Community Posts Collection
+    match /posts/{postId} {
+      allow read, write: if true;
+
+      // Comments Subcollection
+      match /comments/{commentId} {
+        allow read, write: if true;
+      }
+    }
+
+    // Qualification Attempts Collection
+    match /qualificationAttempts/{attemptId} {
+      allow read, write: if true;
+    }
+
+    // Drill Submissions Collection
+    match /drillSubmissions/{submissionId} {
+      allow read, write: if true;
+    }
+
+    // Subscription Transactions Collection
+    match /subscriptionTransactions/{transactionId} {
+      allow read, write: if true;
+    }
+
+    // Scout Action Logs Collection
+    match /scoutActions/{actionId} {
+      allow read, write: if true;
+    }
+  }
+}
