@@ -89,16 +89,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setResendCountdown(30);
 
     try {
-      await fetch('/api/auth/otp/send', {
+      const response = await fetch('/api/auth/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, purpose: 'Registration' })
       });
+      if (!response.ok) throw new Error('OTP request failed');
       setIsLoading(false);
       setStep('OTP');
     } catch (err) {
       setIsLoading(false);
-      setStep('OTP'); // Fallback to OTP step
+      setErrorMsg('Unable to send the OTP. Please try again.');
     }
   };
 
@@ -112,11 +113,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       const resp = await fetch('/api/auth/otp/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, code: otpCode || '123456' })
+        body: JSON.stringify({ phone, code: otpCode })
       });
       const data = await resp.json();
 
-      if (data.verified || otpCode === '123456') {
+      if (resp.ok && data.verified) {
         // Query Firestore /users collection to check if user already registered
         const existingUser = await findUserByPhone(phone || '+91 98765 43210');
         setIsLoading(false);
@@ -148,7 +149,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       }
     } catch (err) {
       setIsLoading(false);
-      setStep('PROFILE');
+      setErrorMsg('Unable to verify the OTP. Please try again.');
     }
   };
 
