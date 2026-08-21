@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { db, handleFirestoreError, OperationType } from './lib/firebase';
 import { collection, onSnapshot, doc, setDoc, getDoc } from 'firebase/firestore';
 import {
@@ -26,24 +26,27 @@ import {
 } from './data/mockData';
 
 import { Navbar } from './components/Navbar';
-import { PlayerPortal } from './components/PlayerPortal';
-import { LeaderboardView } from './components/LeaderboardView';
-import { TrialRecorderModal } from './components/TrialRecorderModal';
-import { ScoutPortal } from './components/ScoutPortal';
-import { ParentPortal } from './components/ParentPortal';
-import { AdminConsole } from './components/AdminConsole';
-import { CommunityFeed } from './components/CommunityFeed';
-import { DiscoverView } from './components/DiscoverView';
-import { PlayerProfileModal } from './components/PlayerProfileModal';
-import { AuthModal } from './components/AuthModal';
-import { PlayerQualificationJourney } from './components/PlayerQualificationJourney';
-import { AuditLogsModal } from './components/AuditLogsModal';
-import { UserProfileView } from './components/UserProfileView';
 import {
   logAuditTransaction,
   recordSubscriptionTransaction,
   recordScoutAction
 } from './lib/auditLogger';
+
+// Keep the initial bundle limited to the application shell. Each portal and
+// modal is fetched only when the visitor opens the corresponding experience.
+const PlayerPortal = lazy(async () => ({ default: (await import('./components/PlayerPortal')).PlayerPortal }));
+const LeaderboardView = lazy(async () => ({ default: (await import('./components/LeaderboardView')).LeaderboardView }));
+const TrialRecorderModal = lazy(async () => ({ default: (await import('./components/TrialRecorderModal')).TrialRecorderModal }));
+const ScoutPortal = lazy(async () => ({ default: (await import('./components/ScoutPortal')).ScoutPortal }));
+const ParentPortal = lazy(async () => ({ default: (await import('./components/ParentPortal')).ParentPortal }));
+const AdminConsole = lazy(async () => ({ default: (await import('./components/AdminConsole')).AdminConsole }));
+const CommunityFeed = lazy(async () => ({ default: (await import('./components/CommunityFeed')).CommunityFeed }));
+const DiscoverView = lazy(async () => ({ default: (await import('./components/DiscoverView')).DiscoverView }));
+const PlayerProfileModal = lazy(async () => ({ default: (await import('./components/PlayerProfileModal')).PlayerProfileModal }));
+const AuthModal = lazy(async () => ({ default: (await import('./components/AuthModal')).AuthModal }));
+const PlayerQualificationJourney = lazy(async () => ({ default: (await import('./components/PlayerQualificationJourney')).PlayerQualificationJourney }));
+const AuditLogsModal = lazy(async () => ({ default: (await import('./components/AuditLogsModal')).AuditLogsModal }));
+const UserProfileView = lazy(async () => ({ default: (await import('./components/UserProfileView')).UserProfileView }));
 
 export default function App() {
   const [currentRole, setCurrentRole] = useState<Role>('GUEST');
@@ -669,6 +672,13 @@ export default function App() {
         onLogout={handleLogout}
       />
 
+      <Suspense fallback={
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" aria-busy="true">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8 text-center text-sm text-slate-400">
+            Loading Digital Scout India…
+          </div>
+        </main>
+      }>
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
@@ -921,6 +931,7 @@ export default function App() {
         currentUser={currentUserAccount}
         currentRole={currentRole}
       />
+      </Suspense>
 
     </div>
   );

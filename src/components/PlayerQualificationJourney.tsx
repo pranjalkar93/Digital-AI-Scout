@@ -26,6 +26,7 @@ export const PlayerQualificationJourney: React.FC<PlayerQualificationJourneyProp
   const [guardianOtp, setGuardianOtp] = useState<string>('');
   const [guardianOtpSent, setGuardianOtpSent] = useState<boolean>(false);
   const [guardianOtpVerified, setGuardianOtpVerified] = useState<boolean>(user?.guardianConsentGiven || false);
+  const [guardianOtpError, setGuardianOtpError] = useState<string>('');
 
   // Step 2: Player Info
   const [position, setPosition] = useState<Position>('Central Mid');
@@ -67,21 +68,36 @@ export const PlayerQualificationJourney: React.FC<PlayerQualificationJourneyProp
   const handleSendGuardianOtp = async () => {
     if (!guardianPhone) return;
     try {
-      await fetch('/api/auth/otp/send', {
+      const response = await fetch('/api/auth/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: guardianPhone, purpose: 'Parental Consent' })
       });
+      if (!response.ok) throw new Error('OTP request failed');
+      setGuardianOtpError('');
       setGuardianOtpSent(true);
     } catch (e) {
-      setGuardianOtpSent(true);
+      setGuardianOtpError('Unable to send the guardian OTP. Please try again.');
     }
   };
 
   // Guardian OTP Verify
   const handleVerifyGuardianOtp = async () => {
-    if (guardianOtp === '123456' || guardianOtp.length === 6) {
-      setGuardianOtpVerified(true);
+    try {
+      const response = await fetch('/api/auth/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: guardianPhone, code: guardianOtp })
+      });
+      const data = await response.json();
+      if (response.ok && data.verified) {
+        setGuardianOtpError('');
+        setGuardianOtpVerified(true);
+      } else {
+        setGuardianOtpError(data.error || 'Invalid or expired guardian OTP.');
+      }
+    } catch (error) {
+      setGuardianOtpError('Unable to verify the guardian OTP. Please try again.');
     }
   };
 
@@ -330,7 +346,7 @@ export const PlayerQualificationJourney: React.FC<PlayerQualificationJourneyProp
                       <div className="flex gap-2">
                         <input
                           type="text"
-                          placeholder="Enter 6-digit OTP (or 123456)"
+                          placeholder="Enter 6-digit OTP"
                           value={guardianOtp}
                           onChange={(e) => setGuardianOtp(e.target.value)}
                           className="bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-xl text-xs flex-1"
@@ -344,6 +360,7 @@ export const PlayerQualificationJourney: React.FC<PlayerQualificationJourneyProp
                         </button>
                       </div>
                     )}
+                    {guardianOtpError && <p className="text-xs text-red-400">{guardianOtpError}</p>}
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold bg-emerald-950/60 p-2.5 rounded-xl border border-emerald-500/30">
